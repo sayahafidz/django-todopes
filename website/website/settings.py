@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j2mn*(f&5=5=m$msk5!o%13tp%+fwqr9ifdh^m*0r=c=x(c(u)'
+# 'django-insecure-j2mn*(f&5=5=m$msk5!o%13tp%+fwqr9ifdh^m*0r=c=x(c(u)'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'django-insecure-j2mn*(f&5=5=m$msk5!o%13tp%+fwqr9ifdh^m*0r=c=x(c(u)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOST', '127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -80,7 +85,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+# prod setting
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -117,6 +124,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+# dev setting
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# prod setting
+# STATIC_ROOT =  'home/hafidz/staticfiles'
 
 STATIC_URL = '/static/'
 
